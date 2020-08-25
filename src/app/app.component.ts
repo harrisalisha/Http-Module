@@ -11,7 +11,9 @@ export class AppComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchPosts();
+  }
 
   onCreatePost(postData: { title: string; content: string }) {
     //console.log(postData);
@@ -25,11 +27,20 @@ export class AppComponent implements OnInit {
 
   onFetchPosts() {
     // Send Http request
+    this.fetchPosts();
   }
 
   onClearPosts() {
     // Send Http request
   }
+
+  private fetchPosts(){
+    this.http.get('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
+    .subscribe((data)=>{
+      console.log(data);
+    })
+  }
+
 }
 //requirement firebase is create folder.json in line 20, posts.json
 //postData is req.body, http req we have to subscribe otherwise wont happen sent

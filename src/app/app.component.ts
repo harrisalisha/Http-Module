@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
+import {Post } from './post.model';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +21,7 @@ export class AppComponent implements OnInit {
     //console.log(postData);
     // Send Http request
    this.http
-      .post('https://angular-udemy-c0ab4.firebaseio.com/posts.json', postData)
+      .post<{ name: string }>('https://angular-udemy-c0ab4.firebaseio.com/posts.json', postData)
       .subscribe(responseData => {
         console.log(responseData);
       });
@@ -35,13 +37,23 @@ export class AppComponent implements OnInit {
   }
 
   private fetchPosts(){
-    this.http.get('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
+    this.http.get<{ [key: string]: Post }>('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
+    .pipe(map(responseData => {
+      const postsArray: Post[] = [];
+      for(const key in responseData){
+        if (responseData.hasOwnProperty(key)) {
+        postsArray.push({...responseData[key], id: key });
+        }
+      }
+      return postsArray;
+    }))
     .subscribe((data)=>{
       console.log(data);
     })
-  }
+  }//responseData type{ [key: string]: Post } line44
 
 }
+//pipe funnel multiple data before reach subscribe()
 //requirement firebase is create folder.json in line 20, posts.json
 //postData is req.body, http req we have to subscribe otherwise wont happen sent
 //u dont need unsubscribe,observale dont need to manage it,its done after complete any way

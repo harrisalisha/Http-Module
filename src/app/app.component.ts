@@ -16,7 +16,11 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient, private postsService: PostsService) {}
 
   ngOnInit() {
-    this.postsService.fetchPosts();
+    this.isFetching = true;
+    this.postsService.fetchPosts(). subscribe(posts => {
+      this.isFetching = false;
+      this.loadedPosts = posts;
+    });
   }
 
   onCreatePost(postData: { title: string; content: string }) {
@@ -26,18 +30,16 @@ export class AppComponent implements OnInit {
 
   onFetchPosts() {
     // Send Http request
-    this.postsService.fetchPosts();
+    this.isFetching = true;
+    this.postsService.fetchPosts(). subscribe(posts => {
+      this.isFetching = false;
+      this.loadedPosts = posts;
+    });
   }
 
   onClearPosts() {
     // Send Http request
   }
 
-
-
 }
 
-//pipe funnel multiple data before reach subscribe()
-//requirement firebase is create folder.json in line 20, posts.json
-//postData is req.body, http req we have to subscribe otherwise wont happen sent
-//u dont need unsubscribe,observale dont need to manage it,its done after complete any way

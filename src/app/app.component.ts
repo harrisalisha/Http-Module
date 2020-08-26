@@ -10,6 +10,7 @@ import {Post } from './post.model';
 })
 export class AppComponent implements OnInit {
   loadedPosts : Post [] = [];
+  isFetching= false;
 
   constructor(private http: HttpClient) {}
 
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
   }
 
   private fetchPosts(){
+    this.isFetching = true;
     this.http.get<{ [key: string]: Post }>('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
     .pipe(map(responseData => {
       const postsArray: Post[] = [];
@@ -48,11 +50,13 @@ export class AppComponent implements OnInit {
       return postsArray;
     }))
     .subscribe((datas)=>{
+      this.isFetching = false;
       this.loadedPosts = datas;
     })
   }//responseData type{ [key: string]: Post } line44
 
 }
+
 //pipe funnel multiple data before reach subscribe()
 //requirement firebase is create folder.json in line 20, posts.json
 //postData is req.body, http req we have to subscribe otherwise wont happen sent

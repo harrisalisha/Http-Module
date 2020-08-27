@@ -2,11 +2,13 @@ import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Post } from './post.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostsService {
+  error = new Subject<string>();//subject call next()
 
   constructor(private http: HttpClient){}
 
@@ -17,6 +19,8 @@ export class PostsService {
     .post<{ name: string }>('https://angular-udemy-c0ab4.firebaseio.com/posts.json', postData)
     .subscribe(responseData => {
       console.log(responseData);
+    }, error => {
+      this.error.next(error.message);
     });
   }
 

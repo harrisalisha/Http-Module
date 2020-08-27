@@ -31,13 +31,16 @@ export class PostsService {
         }
       }
       return postsArray;
-    }))
-
+    }));
   }
-  //in fetchPosts we remove subscribe in service instead we subscribe in our appcomponent
-  //responseData type{ [key: string]: Post } line44
 
-
-
+  deleteposts(){
+    return this.http.delete('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
+  }
+  //return no subscribe, we can do it in component
 
 }
+
+
+//in fetchPosts we remove subscribe in service instead we subscribe in our appcomponent
+  //responseData type{ [key: string]: Post } line44

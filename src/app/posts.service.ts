@@ -1,5 +1,5 @@
-import { map, catchError } from 'rxjs/operators';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { map, catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Post } from './post.model';
 import { Subject, throwError } from 'rxjs';
@@ -12,13 +12,19 @@ export class PostsService {
 
   constructor(private http: HttpClient){}
 
-  //method
+  //method, observe is request for response
   createAndStorePost(title: string, content: string){
     const postData : Post = {title: title, content: content};
     this.http
-    .post<{ name: string }>('https://angular-udemy-c0ab4.firebaseio.com/posts.json', postData)
+    .post<{ name: string }>(
+      'https://angular-udemy-c0ab4.firebaseio.com/posts.json',
+      postData,
+      {
+        observe: 'response'
+      }
+      )
     .subscribe(responseData => {
-      console.log(responseData);
+      console.log(responseData.body);
     }, error => {
       this.error.next(error.message);
     });
@@ -54,12 +60,26 @@ export class PostsService {
   }
 
   deleteposts(){
-    return this.http.delete('https://angular-udemy-c0ab4.firebaseio.com/posts.json')
+    return this.http.delete(
+      'https://angular-udemy-c0ab4.firebaseio.com/posts.json',
+      {
+        observe: 'events'
+      }
+    ).pipe(tap(event => {
+        console.log(event);
+        if(event.type === HttpEventType.Sent){
+          //...
+        }
+        if(event.type === HttpEventType.Response){
+          console.log(event.body);
+        }
+    }));
   }
   //return no subscribe, we can do it in component
 
 }
 
+//observe: response, events, body
 
 //in fetchPosts we remove subscribe in service instead we subscribe in our appcomponent
   //responseData type{ [key: string]: Post } line44
